@@ -1,0 +1,1251 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>学習習慣トラッカー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  :root {
+    /* 配色: 藍×生成り×山吹 */
+    --bg: #f5f3ee;
+    --card: #fffefb;
+    --ink: #1f2233;
+    --ink-2: #585c70;
+    --muted: #8b8e9e;
+    --line: #e4e1d8;
+    --track: #ece9e1;
+    --accent: #33478f;
+    --accent-deep: #232f66;
+    --gold: #a8780f;
+    --good: #1f7a3a;
+    --heat-0: #ece9e1;
+    --heat-1: #c5cdea;
+    --heat-2: #7f90d1;
+    --heat-3: #44579f;
+    --heat-4: #1f2a5e;
+    --shadow: 0 1px 2px rgba(31,34,51,0.05), 0 6px 18px rgba(31,34,51,0.06);
+    --s1: #33478f;
+    --s2: #1d8a7a;
+    --s3: #b87a14;
+    --s4: #c04a66;
+    --s5: #7a5fb5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #12131c;
+      --card: #1b1d2a;
+      --ink: #eeeef5;
+      --ink-2: #a9acbf;
+      --muted: #7c8096;
+      --line: #2c2f41;
+      --track: #252838;
+      --accent: #5b70d6;
+      --accent-deep: #9fb0f5;
+      --gold: #dcb04e;
+      --good: #45b36a;
+      --heat-0: #252838;
+      --heat-1: #2b3672;
+      --heat-2: #4a5fc0;
+      --heat-3: #7c8fe6;
+      --heat-4: #bcc7fb;
+      --shadow: none;
+      --s1: #6f84e0;
+      --s2: #2fa896;
+      --s3: #d19a35;
+      --s4: #d9698a;
+      --s5: #9a82d6;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #12131c;
+    --card: #1b1d2a;
+    --ink: #eeeef5;
+    --ink-2: #a9acbf;
+    --muted: #7c8096;
+    --line: #2c2f41;
+    --track: #252838;
+    --accent: #5b70d6;
+    --accent-deep: #9fb0f5;
+    --gold: #dcb04e;
+    --good: #45b36a;
+    --heat-0: #252838;
+    --heat-1: #2b3672;
+    --heat-2: #4a5fc0;
+    --heat-3: #7c8fe6;
+    --heat-4: #bcc7fb;
+    --shadow: none;
+    --s1: #6f84e0;
+    --s2: #2fa896;
+    --s3: #d19a35;
+    --s4: #d9698a;
+    --s5: #9a82d6;
+  }
+
+  /* iPhoneのダブルタップズームを無効化（スクロールは通常どおり） */
+  * { box-sizing: border-box; touch-action: manipulation; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Noto Sans JP", system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 540px; margin: 0 auto; padding: 20px 16px 48px; }
+
+  header { margin-bottom: 18px; }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 2px 0 6px;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+  .head-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .countdown { font-size: 13px; color: var(--ink-2); }
+  .countdown b {
+    font-size: 20px;
+    color: var(--accent-deep);
+    font-variant-numeric: tabular-nums;
+    margin: 0 2px;
+  }
+  .chip {
+    font-size: 11px;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 2px 10px;
+    background: var(--card);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .chip.ok { color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+
+  section, details.settings {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 18px 18px 16px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .card-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  /* 縦書きの札 — 積み上げカードの目印 */
+  .tag-v {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    writing-mode: vertical-rl;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    border-right: 2px solid var(--accent);
+    padding-right: 6px;
+  }
+
+  .today-num {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .today-num small { font-size: 18px; font-weight: 600; color: var(--ink-2); margin-left: 2px; }
+  .today-date { font-size: 13px; color: var(--ink-2); }
+  .goal-note { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .goal-note.done { color: var(--good); font-weight: 600; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 0;
+    flex: 1 1 0;
+    min-width: 72px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  button:active { transform: scale(0.97); }
+  button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+  button.ghost {
+    background: transparent;
+    color: var(--accent-deep);
+    border: 1px solid var(--line);
+    font-weight: 600;
+  }
+  .fix-row { display: none; gap: 8px; margin-top: 10px; align-items: center; }
+  .fix-row.show { display: flex; }
+  .fix-row input {
+    flex: 1;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    min-width: 0;
+  }
+  .fix-row button { flex: 0 0 auto; padding: 10px 18px; }
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 0 0;
+    flex: 0 0 auto;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .hero {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .hero-num {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--accent-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-unit { font-size: 15px; color: var(--ink-2); font-weight: 600; }
+  .bar {
+    height: 12px;
+    background: var(--track);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 12px 0 6px;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .bar-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .pace { font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+  .pace b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .cheer { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 4px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 0; background: none; border: none; box-shadow: none; }
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 12px 8px 10px;
+    text-align: center;
+  }
+  .tile .v { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .tile .v small { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .tile .k { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .tile.hot .v { color: var(--gold); }
+
+  .heat-scroll { overflow-x: auto; padding-bottom: 4px; }
+  .heat-grid { display: flex; gap: 3px; width: max-content; }
+  .heat-daycol { display: flex; flex-direction: column; gap: 3px; margin-right: 4px; }
+  .heat-daycol span, .heat-mon {
+    font-size: 9px;
+    color: var(--muted);
+    height: 13px;
+    line-height: 13px;
+  }
+  .heat-col { display: flex; flex-direction: column; gap: 3px; }
+  .heat-mon { height: 14px; white-space: nowrap; }
+  .cell {
+    width: 13px;
+    height: 13px;
+    border-radius: 3px;
+    background: var(--heat-0);
+    cursor: pointer;
+  }
+  .cell.l1 { background: var(--heat-1); }
+  .cell.l2 { background: var(--heat-2); }
+  .cell.l3 { background: var(--heat-3); }
+  .cell.l4 { background: var(--heat-4); }
+  .cell.future { background: transparent; border: 1px dashed var(--line); cursor: default; }
+  .cell.today { outline: 2px solid var(--gold); outline-offset: 1px; }
+  .heat-legend { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); margin-top: 8px; justify-content: flex-end; }
+  .heat-legend .cell { cursor: default; }
+  .heat-caption { font-size: 12px; color: var(--ink-2); margin-top: 8px; min-height: 20px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .heat-caption input {
+    width: 70px;
+    font: inherit;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .heat-caption button { flex: 0 0 auto; padding: 5px 12px; font-size: 12px; border-radius: 8px; }
+
+  .chart { position: relative; height: 130px; margin-top: 14px; }
+  .goal-line {
+    position: absolute;
+    left: 0; right: 0;
+    border-top: 2px dashed color-mix(in srgb, var(--gold) 55%, transparent);
+    z-index: 1;
+  }
+  .goal-line em {
+    position: absolute;
+    right: 0;
+    top: -16px;
+    font-style: normal;
+    font-size: 10px;
+    color: var(--gold);
+  }
+  .bars { display: flex; align-items: flex-end; gap: 4px; height: 100%; }
+  .bcol { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; cursor: pointer; }
+  .bcol i {
+    display: block;
+    background: var(--accent);
+    border-radius: 4px 4px 0 0;
+    min-height: 0;
+    transition: height 0.3s ease;
+  }
+  .bcol i + i { border-radius: 0; }
+  .bcol.zero i { min-height: 2px; background: var(--track); border-radius: 0; }
+  .bxlabels { display: flex; gap: 4px; margin-top: 4px; }
+  .bxlabels span { flex: 1; font-size: 9px; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .chart-caption { font-size: 12px; color: var(--ink-2); margin-top: 6px; min-height: 18px; font-variant-numeric: tabular-nums; }
+  .chart-caption i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin: 0 4px 0 8px; }
+
+  details.settings summary {
+    font-size: 13px;
+    color: var(--ink-2);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  details.settings summary:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 6px; }
+  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .set-grid label { font-size: 11px; color: var(--muted); display: block; }
+  .set-grid input {
+    width: 100%;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    padding: 9px 10px;
+    margin-top: 3px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 20px; }
+
+  /* iPhoneは16px未満の入力欄にフォーカスすると自動ズームするため、入力欄は16px固定 */
+  .fix-row input, .heat-caption input, .set-grid input { font-size: 16px; }
+  .heat-caption input { width: 88px; }
+
+  /* ---------- 科目 ---------- */
+  .subj-now { font-size: 12px; color: var(--muted); margin-top: 12px; }
+  .subj-pick { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 2px; }
+  button.sp {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  button.sp.on { background: var(--sc); border-color: var(--sc); color: #fff; }
+  button.sp.passed:not(.on) { color: var(--muted); }
+  .today-break { font-size: 12px; color: var(--ink-2); margin-top: 4px; min-height: 18px; }
+  .today-break i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: 0; }
+  .today-break i:first-child { margin-left: 0; }
+
+  .srow { padding: 10px 0 8px; border-top: 1px solid var(--line); }
+  .srow:first-of-type { border-top: none; padding-top: 2px; }
+  button.srow-main {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    padding: 0;
+    background: none;
+    color: var(--ink);
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .sdot { width: 10px; height: 10px; border-radius: 3px; background: var(--sc); flex: 0 0 auto; align-self: center; }
+  .sname { font-size: 15px; }
+  .sbadge { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .srow.on .sbadge { background: color-mix(in srgb, var(--sc) 16%, transparent); color: var(--sc); }
+  .srow.passed .sbadge { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
+  .shours { margin-left: auto; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .shours small { font-size: 12px; font-weight: 600; color: var(--ink-2); margin-left: 1px; }
+  .srow.passed .shours { color: var(--good); }
+  .sbar { height: 6px; background: var(--track); border-radius: 999px; overflow: hidden; margin: 6px 0 4px 18px; }
+  .sbar > i { display: block; height: 100%; background: var(--sc); border-radius: 999px; transition: width 0.4s ease; }
+  .smeta { display: flex; justify-content: space-between; align-items: center; margin-left: 18px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .smeta .link-btn { padding: 0; font-size: 11px; }
+  .heat-caption select {
+    font: inherit;
+    font-size: 16px;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+    max-width: 150px;
+  }
+
+  /* 継続マップのマスを指で押せる大きさに */
+  .heat-grid .cell { width: 18px; height: 18px; border-radius: 4px; }
+  .heat-daycol span { height: 18px; line-height: 18px; }
+  .heat-daycol span.heat-mon, .heat-mon { height: 14px; line-height: 14px; }
+  .set-note { font-size: 12px; color: var(--gold); margin-top: 10px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow" id="studyLabel">販売士1級（リテールマーケティング検定）</div>
+    <h1>学習習慣トラッカー</h1>
+    <div class="head-row">
+      <span class="countdown">試験日まで <b id="daysLeft">—</b> 日</span>
+      <span class="countdown">合格 <b id="passedCount">0</b>／5科目</span>
+      <span class="chip" id="syncChip">読み込み中…</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="card-label">きょうの記録</div>
+    <div class="today-date" id="todayDate"></div>
+    <div class="today-num"><span id="todayMin">0</span><small>分</small></div>
+    <div class="goal-note" id="todayGoalNote"></div>
+    <div class="today-break" id="todayBreak"></div>
+    <div class="subj-now">記録する科目</div>
+    <div class="subj-pick" id="subjPick"></div>
+    <div class="btn-row">
+      <button data-add="15">＋15分</button>
+      <button data-add="30">＋30分</button>
+      <button data-add="60">＋60分</button>
+      <button class="link-btn" id="fixToggle">直接修正</button>
+    </div>
+    <div class="fix-row" id="fixRow">
+      <input type="number" id="fixInput" min="0" max="1440" inputmode="numeric" placeholder="この科目のきょうの分数">
+      <button id="fixSave">修正</button>
+    </div>
+  </section>
+
+  <section>
+    <span class="tag-v">積み上げ</span>
+    <div class="card-label">累計勉強時間</div>
+    <div class="hero">
+      <span class="hero-num" id="totalHours">0</span>
+      <span class="hero-unit">時間 <span id="totalPct"></span></span>
+    </div>
+    <div class="bar"><i id="totalBar" style="width:0%"></i></div>
+    <div class="bar-meta"><span>0h</span><span id="targetLabel"></span></div>
+    <div class="pace" id="paceNote"></div>
+    <div class="cheer" id="cheerNote"></div>
+  </section>
+
+  <section>
+    <div class="card-label">科目別の累計（バーは最多科目との比較）</div>
+    <div id="subjList"></div>
+  </section>
+
+  <section class="tiles">
+    <div class="tile hot"><div class="v"><span id="streakNow">0</span><small> 日</small></div><div class="k">連続日数</div></div>
+    <div class="tile"><div class="v"><span id="streakBest">0</span><small> 日</small></div><div class="k">最長連続</div></div>
+    <div class="tile"><div class="v"><span id="daysStudied">0</span><small> 日</small></div><div class="k">勉強した日</div></div>
+  </section>
+
+  <section>
+    <div class="card-label">継続マップ（開始日 → 試験日）</div>
+    <div class="heat-scroll" id="heatScroll">
+      <div class="heat-grid" id="heatGrid"></div>
+    </div>
+    <div class="heat-legend">
+      <span>少</span>
+      <span class="cell"></span><span class="cell l1"></span><span class="cell l2"></span><span class="cell l3"></span><span class="cell l4"></span>
+      <span>多</span>
+    </div>
+    <div class="heat-caption" id="heatCaption">マスをタップすると、その日の記録を確認・修正できます</div>
+  </section>
+
+  <section>
+    <div class="card-label">直近14日</div>
+    <div class="chart">
+      <div class="goal-line" id="goalLine"><em id="goalLineLabel"></em></div>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="bxlabels" id="bxlabels"></div>
+    <div class="chart-caption" id="barCaption"></div>
+  </section>
+
+  <details class="settings">
+    <summary>目標の設定</summary>
+    <div class="set-grid">
+      <div style="grid-column: 1 / -1;"><label>学習の名前（見出しに表示）<input type="text" id="setLabel" maxlength="40" placeholder="例: 販売士1級 / 簿記2級 / TOEIC"></label></div>
+      <div><label>目標総時間（時間）<input type="number" id="setTarget" min="10" max="1000" inputmode="numeric"></label></div>
+      <div><label>1日の目標（分）<input type="number" id="setDaily" min="5" max="720" inputmode="numeric"></label></div>
+      <div><label>開始日<input type="date" id="setStart"></label></div>
+      <div><label>試験日<input type="date" id="setExam"></label></div>
+    </div>
+  </details>
+
+  <details class="settings">
+    <summary>接続設定（同期）</summary>
+    <div class="set-grid">
+      <div style="grid-column: 1 / -1;"><label>接続先URL<input type="text" id="connUrl" placeholder="https://script.google.com/macros/s/…/exec"></label></div>
+      <div style="grid-column: 1 / -1;"><label>合言葉<input type="text" id="connToken" placeholder="合言葉"></label></div>
+    </div>
+    <div class="btn-row"><button id="connSave">接続を保存</button></div>
+    <div class="set-note" id="connNote"></div>
+  </details>
+
+  <footer>毎日ひとマスずつ。積み上げは裏切らない。</footer>
+</div>
+
+<script id="app-state" type="application/json">{"settings": {"label": "販売士1級（リテールマーケティング検定）", "examDate": "2027-04-30", "startDate": "2026-08-26", "targetHours": 230, "dailyGoalMin": 60}, "logs": {"2026-08-26": 30, "2026-08-27": 60, "2026-08-28": 60, "2026-08-29": 60, "2026-08-30": 60, "2026-08-31": 60, "2026-09-01": 60, "2026-09-02": 60, "2026-09-03": 90, "2026-09-04": 60, "2026-09-05": 60, "2026-09-06": 60, "2026-09-07": 60, "2026-09-08": 60, "2026-09-09": 5, "2026-09-10": 60, "2026-09-11": 60, "2026-09-12": 60, "2026-09-13": 60, "2026-09-14": 60, "2026-09-15": 60, "2026-09-16": 60, "2026-09-17": 120, "2026-09-18": 60, "2026-09-19": 60, "2026-09-20": 60, "2026-09-21": 60, "2026-09-22": 60, "2026-09-23": 60, "2026-09-24": 60, "2026-09-25": 60, "2026-09-26": 60, "2026-09-27": 30, "2026-09-28": 30, "2026-09-29": 60, "2026-09-30": 30, "2026-10-01": 30, "2026-10-02": 90, "2026-10-03": 60, "2026-10-04": 60, "2026-10-05": 60, "2026-10-06": 60, "2026-10-07": 90, "2026-10-08": 60, "2026-10-09": 60, "2026-10-10": 60, "2026-10-11": 60, "2026-10-12": 60, "2026-10-13": 60, "2026-10-14": 60, "2026-10-15": 60, "2026-10-16": 60, "2026-10-17": 60, "2026-10-18": 60, "2026-10-19": 60, "2026-10-20": 60, "2026-10-21": 60, "2026-10-22": 60, "2026-10-23": 60, "2026-10-24": 60, "2026-10-25": 60, "2026-10-26": 60, "2026-10-27": 60, "2026-10-28": 60, "2026-10-29": 60, "2026-10-30": 60, "2026-10-31": 60, "2026-11-01": 60, "2026-11-02": 60, "2026-11-03": 60, "2026-11-04": 60, "2026-11-05": 30, "2026-11-06": 60, "2026-11-07": 60, "2026-11-08": 15, "2026-11-09": 30, "2026-11-10": 60, "2026-11-11": 90, "2026-11-12": 30, "2026-11-13": 45, "2026-11-14": 35, "2026-11-15": 10, "2026-11-16": 60}, "subjects": [{"id": "s1", "name": "小売業の類型", "passedOn": "2026-10-07", "passedAt": "2026-10-07T06:16:00.000Z"}, {"id": "s2", "name": "マーチャンダイジング", "passedOn": "", "passedAt": ""}, {"id": "s3", "name": "ストアオペレーション", "passedOn": "", "passedAt": ""}, {"id": "s4", "name": "マーケティング", "passedOn": "", "passedAt": ""}, {"id": "s5", "name": "販売・経営管理", "passedOn": "", "passedAt": ""}], "current": "s2", "subjLogs": {"2026-08-26": {"s1": 30}, "2026-08-27": {"s1": 60}, "2026-08-28": {"s1": 60}, "2026-08-29": {"s1": 60}, "2026-08-30": {"s1": 60}, "2026-08-31": {"s1": 60}, "2026-09-01": {"s1": 60}, "2026-09-02": {"s1": 60}, "2026-09-03": {"s1": 90}, "2026-09-04": {"s1": 60}, "2026-09-05": {"s1": 60}, "2026-09-06": {"s1": 60}, "2026-09-07": {"s1": 60}, "2026-09-08": {"s1": 60}, "2026-09-09": {"s1": 5}, "2026-09-10": {"s1": 60}, "2026-09-11": {"s1": 60}, "2026-09-12": {"s1": 60}, "2026-09-13": {"s1": 60}, "2026-09-14": {"s1": 60}, "2026-09-15": {"s1": 60}, "2026-09-16": {"s1": 60}, "2026-09-17": {"s1": 120}, "2026-09-18": {"s1": 60}, "2026-09-19": {"s1": 60}, "2026-09-20": {"s1": 60}, "2026-09-21": {"s1": 60}, "2026-09-22": {"s1": 60}, "2026-09-23": {"s1": 60}, "2026-09-24": {"s1": 60}, "2026-09-25": {"s1": 60}, "2026-09-26": {"s1": 60}, "2026-09-27": {"s1": 30}, "2026-09-28": {"s1": 30}, "2026-09-29": {"s1": 60}, "2026-09-30": {"s1": 30}, "2026-10-01": {"s1": 30}, "2026-10-02": {"s1": 90}, "2026-10-03": {"s1": 60}, "2026-10-04": {"s1": 60}, "2026-10-05": {"s1": 60}, "2026-10-06": {"s1": 60}, "2026-10-07": {"s1": 90}, "2026-10-08": {"s2": 60}, "2026-10-09": {"s2": 60}, "2026-10-10": {"s2": 60}, "2026-10-11": {"s2": 60}, "2026-10-12": {"s2": 60}, "2026-10-13": {"s2": 60}, "2026-10-14": {"s2": 60}, "2026-10-15": {"s2": 60}, "2026-10-16": {"s2": 60}, "2026-10-17": {"s2": 60}, "2026-10-18": {"s2": 60}, "2026-10-19": {"s2": 60}, "2026-10-20": {"s2": 60}, "2026-10-21": {"s2": 60}, "2026-10-22": {"s2": 60}, "2026-10-23": {"s2": 60}, "2026-10-24": {"s2": 60}, "2026-10-25": {"s2": 60}, "2026-10-26": {"s2": 60}, "2026-10-27": {"s2": 60}, "2026-10-28": {"s2": 60}, "2026-10-29": {"s2": 60}, "2026-10-30": {"s2": 60}, "2026-10-31": {"s2": 60}, "2026-11-01": {"s2": 60}, "2026-11-02": {"s2": 60}, "2026-11-03": {"s2": 60}, "2026-11-04": {"s2": 60}, "2026-11-05": {"s2": 30}, "2026-11-06": {"s2": 60}, "2026-11-07": {"s2": 60}, "2026-11-08": {"s2": 15}, "2026-11-09": {"s2": 30}, "2026-11-10": {"s2": 60}, "2026-11-11": {"s2": 90}, "2026-11-12": {"s2": 30}, "2026-11-13": {"s2": 45}, "2026-11-14": {"s2": 35}, "2026-11-15": {"s2": 10}, "2026-11-16": {"s2": 60}}, "stamps": {"2026-08-26|s1": "2026-11-16T15:18:00.000Z", "2026-08-27|s1": "2026-11-16T15:18:00.000Z", "2026-08-28|s1": "2026-11-16T15:18:00.000Z", "2026-08-29|s1": "2026-11-16T15:18:00.000Z", "2026-08-30|s1": "2026-11-16T15:18:00.000Z", "2026-08-31|s1": "2026-11-16T15:18:00.000Z", "2026-09-01|s1": "2026-11-16T15:18:00.000Z", "2026-09-02|s1": "2026-11-16T15:18:00.000Z", "2026-09-03|s1": "2026-11-16T15:18:00.000Z", "2026-09-04|s1": "2026-11-16T15:18:00.000Z", "2026-09-05|s1": "2026-11-16T15:18:00.000Z", "2026-09-06|s1": "2026-11-16T15:18:00.000Z", "2026-09-07|s1": "2026-11-16T15:18:00.000Z", "2026-09-08|s1": "2026-11-16T15:18:00.000Z", "2026-09-09|s1": "2026-11-16T15:18:00.000Z", "2026-09-10|s1": "2026-11-16T15:18:00.000Z", "2026-09-11|s1": "2026-11-16T15:18:00.000Z", "2026-09-12|s1": "2026-11-16T15:18:00.000Z", "2026-09-13|s1": "2026-11-16T15:18:00.000Z", "2026-09-14|s1": "2026-11-16T15:18:00.000Z", "2026-09-15|s1": "2026-11-16T15:18:00.000Z", "2026-09-16|s1": "2026-11-16T15:18:00.000Z", "2026-09-17|s1": "2026-11-16T15:18:00.000Z", "2026-09-18|s1": "2026-11-16T15:18:00.000Z", "2026-09-19|s1": "2026-11-16T15:18:00.000Z", "2026-09-20|s1": "2026-11-16T15:18:00.000Z", "2026-09-21|s1": "2026-11-16T15:18:00.000Z", "2026-09-22|s1": "2026-11-16T15:18:00.000Z", "2026-09-23|s1": "2026-11-16T15:18:00.000Z", "2026-09-24|s1": "2026-11-16T15:18:00.000Z", "2026-09-25|s1": "2026-11-16T15:18:00.000Z", "2026-09-26|s1": "2026-11-16T15:18:00.000Z", "2026-09-27|s1": "2026-11-16T15:18:00.000Z", "2026-09-28|s1": "2026-11-16T15:18:00.000Z", "2026-09-29|s1": "2026-11-16T15:18:00.000Z", "2026-09-30|s1": "2026-11-16T15:18:00.000Z", "2026-10-01|s1": "2026-11-16T15:18:00.000Z", "2026-10-02|s1": "2026-11-16T15:18:00.000Z", "2026-10-03|s1": "2026-11-16T15:18:00.000Z", "2026-10-04|s1": "2026-11-16T15:18:00.000Z", "2026-10-05|s1": "2026-11-16T15:18:00.000Z", "2026-10-06|s1": "2026-11-16T15:18:00.000Z", "2026-10-07|s1": "2026-11-16T15:18:00.000Z", "2026-10-08|s2": "2026-11-16T15:18:00.000Z", "2026-10-09|s2": "2026-11-16T15:18:00.000Z", "2026-10-10|s2": "2026-11-16T15:18:00.000Z", "2026-10-11|s2": "2026-11-16T15:18:00.000Z", "2026-10-12|s2": "2026-11-16T15:18:00.000Z", "2026-10-13|s2": "2026-11-16T15:18:00.000Z", "2026-10-14|s2": "2026-11-16T15:18:00.000Z", "2026-10-15|s2": "2026-11-16T15:18:00.000Z", "2026-10-16|s2": "2026-11-16T15:18:00.000Z", "2026-10-17|s2": "2026-11-16T15:18:00.000Z", "2026-10-18|s2": "2026-11-16T15:18:00.000Z", "2026-10-19|s2": "2026-11-16T15:18:00.000Z", "2026-10-20|s2": "2026-11-16T15:18:00.000Z", "2026-10-21|s2": "2026-11-16T15:18:00.000Z", "2026-10-22|s2": "2026-11-16T15:18:00.000Z", "2026-10-23|s2": "2026-11-16T15:18:00.000Z", "2026-10-24|s2": "2026-11-16T15:18:00.000Z", "2026-10-25|s2": "2026-11-16T15:18:00.000Z", "2026-10-26|s2": "2026-11-16T15:18:00.000Z", "2026-10-27|s2": "2026-11-16T15:18:00.000Z", "2026-10-28|s2": "2026-11-16T15:18:00.000Z", "2026-10-29|s2": "2026-11-16T15:18:00.000Z", "2026-10-30|s2": "2026-11-16T15:18:00.000Z", "2026-10-31|s2": "2026-11-16T15:18:00.000Z", "2026-11-01|s2": "2026-11-16T15:18:00.000Z", "2026-11-02|s2": "2026-11-16T15:18:00.000Z", "2026-11-03|s2": "2026-11-16T15:18:00.000Z", "2026-11-04|s2": "2026-11-16T15:18:00.000Z", "2026-11-05|s2": "2026-11-16T15:18:00.000Z", "2026-11-06|s2": "2026-11-16T15:18:00.000Z", "2026-11-07|s2": "2026-11-16T15:18:00.000Z", "2026-11-08|s2": "2026-11-16T15:18:00.000Z", "2026-11-09|s2": "2026-11-16T15:18:00.000Z", "2026-11-10|s2": "2026-11-16T15:18:00.000Z", "2026-11-11|s2": "2026-11-16T15:18:00.000Z", "2026-11-12|s2": "2026-11-16T15:18:00.000Z", "2026-11-13|s2": "2026-11-16T15:18:00.000Z", "2026-11-14|s2": "2026-11-16T15:18:00.000Z", "2026-11-15|s2": "2026-11-16T15:18:00.000Z", "2026-11-16|s2": "2026-11-16T15:18:00.000Z"}, "updatedAt": "2026-11-16T15:18:00.000Z"}</script>
+<script>
+(() => {
+  "use strict";
+  const LS_KEY = "hanbaishi1-tsumiage";
+  const GAS_KEY = "hanbaishi1-gas";
+  const gasCfg = () => { try { return JSON.parse(localStorage.getItem(GAS_KEY)) || {}; } catch { return {}; } };
+
+  const DEFAULT_LABEL = "販売士1級（リテールマーケティング検定）";
+  const SUBJECTS = [
+    { id: "s1", name: "小売業の類型" },
+    { id: "s2", name: "マーチャンダイジング" },
+    { id: "s3", name: "ストアオペレーション" },
+    { id: "s4", name: "マーケティング" },
+    { id: "s5", name: "販売・経営管理" }
+  ];
+  const subjColor = id => `var(--${id})`;
+  const defaultState = () => ({
+    settings: {
+      label: DEFAULT_LABEL,
+      examDate: "2027-02-17",
+      startDate: "2026-09-01",
+      targetHours: 100,
+      dailyGoalMin: 60
+    },
+    logs: {},          // 日付 → その日の合計分（各科目の合計）
+    subjects: SUBJECTS.map(x => ({ id: x.id, name: x.name, passedOn: "", passedAt: "" })),
+    current: "s1",     // いま記録する科目
+    subjLogs: {},      // 日付 → { 科目id: 分 }
+    stamps: {},        // "日付|科目id" → 最終更新時刻（0分への修正も記録する）
+    updatedAt: ""
+  });
+
+  let state = defaultState();
+  let saveTimer = null;
+  let selectedDate = null;    // ヒートマップで選択中の日
+
+  // ---------- 日付ユーティリティ（ローカルタイム基準） ----------
+  const fmt = d => {
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), dd = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${dd}`;
+  };
+  const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const todayStr = () => fmt(new Date());
+  const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+  const dayDiff = (a, b) => Math.round((parse(b) - parse(a)) / 86400000);
+  const WD = ["日", "月", "火", "水", "木", "金", "土"];
+  const jpDate = s => { const d = parse(s); return `${d.getMonth() + 1}/${d.getDate()}（${WD[d.getDay()]}）`; };
+
+  // ---------- 永続化（db に保存：ページとは別の保管領域） ----------
+  const loadLocal = () => {
+    try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  };
+  const validState = s => s && typeof s === "object" && s.settings && s.logs;
+  const normalize = s => {
+    const settings = Object.assign({}, defaultState().settings, s.settings || {});
+    const oldLogs = Object.assign({}, s.logs || {});
+    const saved = Array.isArray(s.subjects) ? s.subjects : [];
+    const subjects = SUBJECTS.map(x => {
+      const f = saved.find(y => y && y.id === x.id) || {};
+      return { id: x.id, name: x.name, passedOn: f.passedOn || "", passedAt: f.passedAt || "" };
+    });
+    let subjLogs = {};
+    if (s.subjLogs && typeof s.subjLogs === "object") {
+      for (const d of Object.keys(s.subjLogs)) {
+        const row = {};
+        for (const [k, v] of Object.entries(s.subjLogs[d] || {})) if (v > 0 && SUBJECTS.some(x => x.id === k)) row[k] = v;
+        if (Object.keys(row).length) subjLogs[d] = row;
+      }
+    } else {
+      // 科目別になる前の記録は、1科目め（小売業の類型）の学習時間として引き継ぐ
+      for (const [d, v] of Object.entries(oldLogs)) if (v > 0) subjLogs[d] = { s1: v };
+    }
+    // 日別合計は科目別の記録から作り直す
+    const logs = {};
+    for (const d of Object.keys(subjLogs)) {
+      const sum = Object.values(subjLogs[d]).reduce((a, b) => a + b, 0);
+      if (sum > 0) logs[d] = Math.min(1440, sum);
+    }
+    let current = subjects.some(x => x.id === s.current) ? s.current : "s1";
+    if (subjects.find(x => x.id === current).passedOn) {
+      const next = subjects.find(x => !x.passedOn);
+      if (next) current = next.id;
+    }
+    const stamps = {};
+    if (s.stamps && typeof s.stamps === "object") {
+      for (const [k, v] of Object.entries(s.stamps)) if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}\|s[1-5]$/.test(k)) stamps[k] = v;
+    }
+    return { settings, logs, subjects, current, subjLogs, stamps, updatedAt: s.updatedAt || "" };
+  };
+  const newer = (a, b) => {
+    if (!validState(a)) return validState(b) ? b : null;
+    if (!validState(b)) return a;
+    return (a.updatedAt || "") >= (b.updatedAt || "") ? a : b;
+  };
+  // 日×科目のマスごとに、更新時刻が新しい方を採用する（0分への修正も「更新」として残る）
+  const mergeCells = (hi, lo) => {
+    const keys = new Set();
+    for (const s of [hi, lo]) {
+      for (const d of Object.keys(s.subjLogs)) for (const k of Object.keys(s.subjLogs[d])) keys.add(d + "|" + k);
+      for (const k of Object.keys(s.stamps)) keys.add(k);
+    }
+    const subjLogs = {}, stamps = {};
+    for (const key of keys) {
+      const [d, id] = key.split("|");
+      const hv = (hi.subjLogs[d] || {})[id] || 0, lv = (lo.subjLogs[d] || {})[id] || 0;
+      const hs = hi.stamps[key] || "", ls = lo.stamps[key] || "";
+      let v, st;
+      if (hs > ls) { v = hv; st = hs; }
+      else if (ls > hs) { v = lv; st = ls; }
+      else { v = hv > 0 ? hv : lv; st = hs; }
+      if (v > 0) (subjLogs[d] = subjLogs[d] || {})[id] = v;
+      if (st) stamps[key] = st;
+    }
+    return { subjLogs, stamps };
+  };
+  // 2つの記録を合体する：更新時刻のない古い記録は従来どおり「片方にしかない日は残す」
+  const mergeStates = (a, b) => {
+    if (!validState(a)) return validState(b) ? normalize(b) : null;
+    if (!validState(b)) return normalize(a);
+    const na = normalize(a), nb = normalize(b);
+    const aNew = (na.updatedAt || "") >= (nb.updatedAt || "");
+    const hi = aNew ? na : nb, lo = aNew ? nb : na;
+    const cells = mergeCells(hi, lo);
+    const subjects = hi.subjects.map(x => {
+      const o = lo.subjects.find(y => y.id === x.id) || {};
+      const xa = x.passedAt || "", oa = o.passedAt || "";
+      const w = oa > xa ? o : xa > oa ? x : (x.passedOn ? x : o);
+      return { id: x.id, name: x.name, passedOn: w.passedOn || "", passedAt: w.passedAt || "" };
+    });
+    return normalize({
+      settings: hi.settings,
+      subjLogs: cells.subjLogs, stamps: cells.stamps,
+      logs: {},
+      subjects, current: hi.current,
+      updatedAt: hi.updatedAt || lo.updatedAt || ""
+    });
+  };
+  const stable = v => Array.isArray(v) ? v.map(stable)
+    : (v && typeof v === "object") ? Object.keys(v).sort().reduce((o, k) => { o[k] = stable(v[k]); return o; }, {}) : v;
+  const coreOf = s => s ? JSON.stringify(stable({ settings: s.settings, subjLogs: s.subjLogs, stamps: s.stamps || {}, subjects: s.subjects, current: s.current })) : "";
+
+  const setChip = (text, ok) => {
+    const chip = document.getElementById("syncChip");
+    chip.textContent = text;
+    chip.classList.toggle("ok", !!ok);
+  };
+
+  let dirty = false;        // クラウドに未送信の変更があるか
+  let saving = false;       // 送信中か
+  let failCount = 0;
+  let cloudReady = false;   // クラウドの記録を読み込み終えるまでは絶対に上書きしない
+
+  function scheduleSave() {
+    state.updatedAt = new Date().toISOString();
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch {}
+    if (!gasCfg().url) { setChip("この端末のみ保存"); return; }
+    dirty = true;
+    if (!cloudReady) { setChip("未同期・読込待ち…"); return; }
+    setChip("保存中…");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushSave, 400);
+  }
+
+  async function flushSave() {
+    const cfg = gasCfg();
+    if (!cfg.url || !dirty || saving || !cloudReady) return;
+    saving = true;
+    dirty = false;
+    try {
+      const res = await fetch(cfg.url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          token: cfg.token || "", action: "save",
+          state: {
+            settings: state.settings, logs: state.logs,
+            subjects: state.subjects, current: state.current, subjLogs: state.subjLogs, stamps: state.stamps || {},
+            updatedAt: state.updatedAt
+          }
+        })
+      });
+      const j = await res.json();
+      if (!j || !j.ok) throw new Error((j && j.error) || "save failed");
+      saving = false;
+      failCount = 0;
+      if (dirty) { flushSave(); return; }
+      setChip("同期済み ✓", true);
+    } catch (e) {
+      saving = false;
+      dirty = true;
+      if (++failCount >= 4) {
+        setChip("この端末のみ保存");
+        showLocalNotice("network");
+      } else {
+        setChip("未同期・再試行中…");
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(flushSave, 3000);
+      }
+    }
+  }
+  function showLocalNotice(reason) {
+    let msg;
+    if (reason === "no-config") {
+      msg = "⚠ 接続設定がまだです。下の「接続設定」にURLと合言葉を入れると、記録が自動で保存・同期されます。";
+    } else {
+      msg = "⚠ 同期でエラーが発生しました。記録はこの端末内には保存されています。";
+    }
+    let n = document.getElementById("localNotice");
+    if (!n) {
+      n = document.createElement("div");
+      n.id = "localNotice";
+      n.style.cssText = "font-size:12px;color:var(--gold);margin-top:6px;";
+      document.querySelector("header").appendChild(n);
+    }
+    n.textContent = msg;
+  }
+
+  // ---------- 集計 ----------
+  const minsOf = d => state.logs[d] || 0;
+  const subjMin = (d, id) => (state.subjLogs[d] || {})[id] || 0;
+  const subjTotal = id => Object.values(state.subjLogs).reduce((a, r) => a + (r[id] || 0), 0);
+  const subjDays = id => Object.values(state.subjLogs).filter(r => (r[id] || 0) > 0).length;
+  const subjName = id => (SUBJECTS.find(x => x.id === id) || {}).name || "";
+  const subjOf = id => state.subjects.find(x => x.id === id);
+
+  function setSubjMin(d, id, v) {
+    const others = minsOf(d) - subjMin(d, id);
+    v = Math.max(0, Math.min(1440 - others, Math.round(v) || 0));
+    const row = Object.assign({}, state.subjLogs[d] || {});
+    if (v > 0) row[id] = v; else delete row[id];
+    if (Object.keys(row).length) state.subjLogs[d] = row; else delete state.subjLogs[d];
+    const sum = Object.values(row).reduce((a, b) => a + b, 0);
+    if (sum > 0) state.logs[d] = sum; else delete state.logs[d];
+    (state.stamps = state.stamps || {})[d + "|" + id] = new Date().toISOString();
+  }
+  const breakdownHTML = d => {
+    const row = state.subjLogs[d] || {};
+    return SUBJECTS.filter(x => row[x.id] > 0)
+      .map(x => `<i style="background:${subjColor(x.id)}"></i>${x.name} ${row[x.id]}分`).join("");
+  };
+  const totalMin = () => Object.values(state.logs).reduce((a, b) => a + (b || 0), 0);
+
+  function streaks() {
+    const t = todayStr();
+    let cur = 0, d = parse(t);
+    if (minsOf(t) === 0) d = addDays(d, -1); // 今日まだ0分なら昨日から数える
+    while (minsOf(fmt(d)) > 0) { cur++; d = addDays(d, -1); }
+
+    const days = Object.keys(state.logs).filter(k => state.logs[k] > 0).sort();
+    let best = 0, run = 0, prev = null;
+    for (const k of days) {
+      run = (prev && dayDiff(prev, k) === 1) ? run + 1 : 1;
+      best = Math.max(best, run);
+      prev = k;
+    }
+    return { cur, best, count: days.length };
+  }
+
+  // ---------- 描画 ----------
+  function render() {
+    const s = state.settings;
+    const t = todayStr();
+    const tm = minsOf(t);
+    const total = totalMin();
+    const targetMin = s.targetHours * 60;
+
+    // ヘッダー
+    document.getElementById("studyLabel").textContent = s.label || DEFAULT_LABEL;
+    const rawLeft = dayDiff(t, s.examDate);
+    const left = Math.max(0, rawLeft);
+    document.getElementById("daysLeft").textContent = left;
+    document.getElementById("passedCount").textContent = state.subjects.filter(x => x.passedOn).length;
+
+    // きょう
+    document.getElementById("todayDate").textContent = jpDate(t);
+    document.getElementById("todayMin").textContent = tm;
+    const gn = document.getElementById("todayGoalNote");
+    if (tm >= s.dailyGoalMin) {
+      gn.textContent = `きょうの目標 ${s.dailyGoalMin}分 達成！`;
+      gn.className = "goal-note done";
+    } else {
+      gn.textContent = `きょうの目標 ${s.dailyGoalMin}分 まで あと${s.dailyGoalMin - tm}分`;
+      gn.className = "goal-note";
+    }
+
+    // 累計
+    const hours = total / 60;
+    document.getElementById("totalHours").textContent = hours < 100 ? hours.toFixed(1) : Math.round(hours);
+    const pct = targetMin > 0 ? Math.min(100, total / targetMin * 100) : 0;
+    document.getElementById("totalPct").textContent = `／ ${pct.toFixed(0)}%`;
+    document.getElementById("totalBar").style.width = pct + "%";
+    document.getElementById("targetLabel").textContent = `目標 ${s.targetHours}h`;
+
+    const remainMin = Math.max(0, targetMin - total);
+    const paceEl = document.getElementById("paceNote");
+    if (remainMin === 0) {
+      paceEl.innerHTML = "目標時間を達成しました。仕上げの総復習へ！";
+    } else if (left > 0) {
+      paceEl.innerHTML = `残り <b>${(remainMin / 60).toFixed(1)}時間</b> ─ 1日 <b>${Math.ceil(remainMin / left)}分</b> ペースで届きます`;
+    } else {
+      paceEl.textContent = rawLeft < 0
+        ? "試験日を過ぎています。「目標の設定」で次の試験日に更新してください"
+        : "試験日当日です。実力を出し切りましょう！";
+    }
+
+    const st = streaks();
+    const cheer = document.getElementById("cheerNote");
+    if (pct >= 100) cheer.textContent = "🏆 目標達成！ここまでの積み上げが力になっています";
+    else if (tm === 0 && st.cur > 0) cheer.textContent = `きょうやれば連続 ${st.cur + 1}日目！`;
+    else if (pct >= 75) cheer.textContent = "ゴールが見えてきました（75%突破）";
+    else if (pct >= 50) cheer.textContent = "折り返し地点を突破！（50%）";
+    else if (pct >= 25) cheer.textContent = "土台ができてきました（25%突破）";
+    else if (tm === 0 && st.cur > 0) cheer.textContent = `きょうやれば連続 ${st.cur + 1}日目！`;
+    else cheer.textContent = "";
+
+    // タイル
+    document.getElementById("streakNow").textContent = st.cur;
+    document.getElementById("streakBest").textContent = st.best;
+    document.getElementById("daysStudied").textContent = st.count;
+
+    renderSubjects();
+    renderHeatmap();
+    renderBars();
+
+    // 設定欄
+    document.getElementById("setLabel").value = s.label || DEFAULT_LABEL;
+    document.getElementById("setTarget").value = s.targetHours;
+    document.getElementById("setDaily").value = s.dailyGoalMin;
+    document.getElementById("setStart").value = s.startDate;
+    document.getElementById("setExam").value = s.examDate;
+  }
+
+  function renderSubjects() {
+    const t = todayStr();
+    // きょうの内訳
+    document.getElementById("todayBreak").innerHTML = breakdownHTML(t);
+
+    // 記録する科目の切り替え
+    const pick = document.getElementById("subjPick");
+    pick.innerHTML = state.subjects.map(x =>
+      `<button class="sp${x.id === state.current ? " on" : ""}${x.passedOn ? " passed" : ""}" style="--sc:${subjColor(x.id)}" data-pick="${x.id}">${x.name}${x.passedOn ? " ✓" : ""}</button>`
+    ).join("");
+    const onBtn = pick.querySelector(".sp.on");
+    if (onBtn) requestAnimationFrame(() => { pick.scrollLeft = Math.max(0, onBtn.offsetLeft - 16); });
+
+    // 科目別の累計
+    const maxMin = Math.max(1, ...state.subjects.map(x => subjTotal(x.id)));
+    document.getElementById("subjList").innerHTML = state.subjects.map(x => {
+      const m = subjTotal(x.id);
+      const h = m / 60;
+      const on = x.id === state.current;
+      const badge = x.passedOn ? `合格 ${jpDate(x.passedOn).replace(/（.）/, "")}` : on ? "学習中" : "";
+      return `<div class="srow${on ? " on" : ""}${x.passedOn ? " passed" : ""}" style="--sc:${subjColor(x.id)}">
+        <button class="srow-main" data-pick="${x.id}" aria-label="${x.name}を記録する科目にする">
+          <span class="sdot"></span><span class="sname">${x.name}</span>${badge ? `<span class="sbadge">${badge}</span>` : ""}
+          <span class="shours">${h < 100 ? h.toFixed(1) : Math.round(h)}<small>時間</small></span>
+        </button>
+        <div class="sbar"><i style="width:${m / maxMin * 100}%"></i></div>
+        <div class="smeta"><span>${m > 0 ? `${subjDays(x.id)}日 学習` : "まだ記録なし"}</span>
+          <button class="link-btn" data-pass="${x.id}">${x.passedOn ? "合格を取り消す" : "合格にする"}</button></div>
+      </div>`;
+    }).join("");
+  }
+
+  const heatClass = m =>
+    m <= 0 ? "" : m < 30 ? "l1" : m < 60 ? "l2" : m < 90 ? "l3" : "l4";
+
+  function renderHeatmap() {
+    const s = state.settings;
+    const t = todayStr();
+    const grid = document.getElementById("heatGrid");
+    grid.innerHTML = "";
+
+    // 開始日・今日・最初の記録日のうち最も早い日からマップを描く
+    const firstLog = Object.keys(state.logs).sort()[0];
+    let rangeStart = s.startDate;
+    if (t < rangeStart) rangeStart = t;
+    if (firstLog && firstLog < rangeStart) rangeStart = firstLog;
+
+    // 行ラベル（月曜始まり）
+    const dayCol = document.createElement("div");
+    dayCol.className = "heat-daycol";
+    dayCol.innerHTML = "<span class='heat-mon'></span>" +
+      ["月", "火", "水", "木", "金", "土", "日"].map(x => `<span>${x}</span>`).join("");
+    grid.appendChild(dayCol);
+
+    // 開始週の月曜へ戻す
+    let start = parse(rangeStart);
+    const back = (start.getDay() + 6) % 7;
+    start = addDays(start, -back);
+    const end = parse(s.examDate);
+
+    let cur = new Date(start);
+    let lastMonth = -1;
+    while (cur <= end) {
+      const col = document.createElement("div");
+      col.className = "heat-col";
+      const mon = document.createElement("span");
+      mon.className = "heat-mon";
+      // この週のうち、記録範囲内で最初の日の月をラベルにする
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(cur, i);
+        if (fmt(d) >= rangeStart && fmt(d) <= s.examDate) {
+          if (d.getMonth() !== lastMonth) {
+            mon.textContent = (d.getMonth() + 1) + "月";
+            lastMonth = d.getMonth();
+          }
+          break;
+        }
+      }
+      col.appendChild(mon);
+      for (let i = 0; i < 7; i++) {
+        const d = fmt(cur);
+        const cell = document.createElement("span");
+        cell.className = "cell";
+        const inRange = d >= rangeStart && d <= s.examDate;
+        if (!inRange) {
+          cell.style.visibility = "hidden";
+        } else if (d > t) {
+          cell.classList.add("future");
+        } else {
+          const cls = heatClass(minsOf(d));
+          if (cls) cell.classList.add(cls);
+          if (d === t) cell.classList.add("today");
+          cell.title = `${jpDate(d)} ${minsOf(d)}分`;
+          cell.dataset.date = d;
+        }
+        col.appendChild(cell);
+        cur = addDays(cur, 1);
+      }
+      grid.appendChild(col);
+    }
+
+    // 今日の位置まで自動スクロール
+    requestAnimationFrame(() => {
+      const sc = document.getElementById("heatScroll");
+      const todayCell = grid.querySelector(".cell.today");
+      if (todayCell) sc.scrollLeft = Math.max(0, todayCell.parentElement.offsetLeft - sc.clientWidth * 0.6);
+    });
+  }
+
+  function renderHeatCaption() {
+    const cap = document.getElementById("heatCaption");
+    if (!selectedDate) {
+      cap.textContent = "マスをタップすると、その日の記録を確認・修正できます";
+      return;
+    }
+    const d = selectedDate;
+    const row = state.subjLogs[d] || {};
+    const firstId = SUBJECTS.find(x => row[x.id] > 0);
+    const selId = row[state.current] > 0 || !firstId ? state.current : firstId.id;
+    cap.innerHTML = `<div style="flex-basis:100%">${jpDate(d)}：<b>${minsOf(d)}分</b></div>` +
+      (minsOf(d) > 0 ? `<div class="today-break" style="flex-basis:100%;margin:0">${breakdownHTML(d)}</div>` : "") +
+      `<select id="cellSubj">${SUBJECTS.map(x => `<option value="${x.id}"${x.id === selId ? " selected" : ""}>${x.name}</option>`).join("")}</select>` +
+      `<input type="number" id="cellEdit" min="0" max="1440" inputmode="numeric" value="${subjMin(d, selId)}">` +
+      `<button id="cellSave">修正</button>`;
+    document.getElementById("cellSubj").addEventListener("change", e => {
+      document.getElementById("cellEdit").value = subjMin(d, e.target.value);
+    });
+    document.getElementById("cellSave").addEventListener("click", () => {
+      const id = document.getElementById("cellSubj").value;
+      setSubjMin(d, id, Number(document.getElementById("cellEdit").value) || 0);
+      scheduleSave();
+      render();
+      renderHeatCaption();
+    });
+  }
+
+  function renderBars() {
+    const s = state.settings;
+    const t = todayStr();
+    const barsEl = document.getElementById("bars");
+    const lblEl = document.getElementById("bxlabels");
+    barsEl.innerHTML = "";
+    lblEl.innerHTML = "";
+
+    const days = [];
+    for (let i = 13; i >= 0; i--) days.push(fmt(addDays(parse(t), -i)));
+    const maxV = Math.max(s.dailyGoalMin * 1.4, ...days.map(minsOf), 1);
+
+    // 目標ライン
+    const gl = document.getElementById("goalLine");
+    const ratio = Math.min(1, s.dailyGoalMin / maxV);
+    gl.style.bottom = (ratio * 100) + "%";
+    document.getElementById("goalLineLabel").textContent = `目標 ${s.dailyGoalMin}分`;
+
+    for (const d of days) {
+      const m = minsOf(d);
+      const col = document.createElement("div");
+      col.className = "bcol" + (m === 0 ? " zero" : "");
+      if (m === 0) {
+        col.appendChild(document.createElement("i"));
+      } else {
+        // 上から 5科目め → 1科目め の順に積む（1科目めが下）
+        for (const x of [...SUBJECTS].reverse()) {
+          const v = subjMin(d, x.id);
+          if (!v) continue;
+          const seg = document.createElement("i");
+          seg.style.height = (v / maxV * 100) + "%";
+          seg.style.background = subjColor(x.id);
+          col.appendChild(seg);
+        }
+      }
+      col.addEventListener("click", () => {
+        document.getElementById("barCaption").innerHTML = `${jpDate(d)}：${m}分 ` + breakdownHTML(d);
+      });
+      barsEl.appendChild(col);
+
+      const sp = document.createElement("span");
+      const dt = parse(d);
+      sp.textContent = (days.indexOf(d) % 2 === 0) ? `${dt.getDate()}` : "";
+      lblEl.appendChild(sp);
+    }
+  }
+
+  // ---------- 操作 ----------
+  function addToday(min) {
+    const t = todayStr();
+    setSubjMin(t, state.current, subjMin(t, state.current) + min);
+    scheduleSave();
+    render();
+  }
+
+  // 科目の切り替え・合格（イベント委譲）
+  document.addEventListener("click", e => {
+    const p = e.target.closest("[data-pick]");
+    if (p) {
+      state.current = p.dataset.pick;
+      syncFixInput();
+      scheduleSave();
+      render();
+      return;
+    }
+    const q = e.target.closest("[data-pass]");
+    if (q) {
+      const sb = subjOf(q.dataset.pass);
+      sb.passedOn = sb.passedOn ? "" : todayStr();
+      sb.passedAt = new Date().toISOString();
+      if (sb.passedOn && state.current === sb.id) {
+        const next = state.subjects.find(x => !x.passedOn);
+        if (next) state.current = next.id;
+      }
+      scheduleSave();
+      render();
+    }
+  });
+
+  document.querySelectorAll("[data-add]").forEach(b =>
+    b.addEventListener("click", () => addToday(Number(b.dataset.add))));
+
+  // 直接修正の欄を開いたまま科目を切り替えたら、欄の中身も新しい科目に合わせる
+  function syncFixInput() {
+    if (!document.getElementById("fixRow").classList.contains("show")) return;
+    const inp = document.getElementById("fixInput");
+    inp.placeholder = `${subjName(state.current)}のきょうの分数`;
+    inp.value = subjMin(todayStr(), state.current) || "";
+  }
+
+  document.getElementById("fixToggle").addEventListener("click", () => {
+    const row = document.getElementById("fixRow");
+    row.classList.toggle("show");
+    if (row.classList.contains("show")) {
+      const inp = document.getElementById("fixInput");
+      inp.placeholder = `${subjName(state.current)}のきょうの分数`;
+      inp.value = subjMin(todayStr(), state.current) || "";
+      inp.focus();
+    }
+  });
+  document.getElementById("fixSave").addEventListener("click", () => {
+    const v = Math.max(0, Math.min(1440, Number(document.getElementById("fixInput").value) || 0));
+    setSubjMin(todayStr(), state.current, v);
+    document.getElementById("fixRow").classList.remove("show");
+    scheduleSave();
+    render();
+  });
+
+  document.getElementById("heatGrid").addEventListener("click", e => {
+    const cell = e.target.closest(".cell[data-date]");
+    if (!cell) return;
+    selectedDate = cell.dataset.date;
+    renderHeatCaption();
+  });
+
+  const bindSetting = (id, key, isNum) => {
+    document.getElementById(id).addEventListener("change", e => {
+      const v = isNum ? Number(e.target.value) : e.target.value;
+      if (isNum && (!v || v <= 0)) return;
+      if (!isNum && !v) return;
+      const note = msg => {
+        let n = document.getElementById("setNote");
+        if (!n) {
+          n = document.createElement("div");
+          n.id = "setNote";
+          n.className = "set-note";
+          document.querySelector("details.settings").appendChild(n);
+        }
+        n.textContent = msg;
+      };
+      if ((key === "startDate" && v > state.settings.examDate) || (key === "examDate" && v < state.settings.startDate)) {
+        e.target.value = state.settings[key];
+        note("開始日は試験日より前の日付にしてください");
+        return;
+      }
+      note("");
+      state.settings[key] = v;
+      scheduleSave();
+      render();
+    });
+  };
+  bindSetting("setLabel", "label", false);
+  bindSetting("setTarget", "targetHours", true);
+  bindSetting("setDaily", "dailyGoalMin", true);
+  bindSetting("setStart", "startDate", false);
+  bindSetting("setExam", "examDate", false);
+
+  // 日付が変わったら（開きっぱなし対策）再描画
+  let lastDay = todayStr();
+  setInterval(() => {
+    if (todayStr() !== lastDay) { lastDay = todayStr(); render(); }
+  }, 60000);
+
+  // 画面を閉じる・切り替える直前に未保存分を即時送信する
+  const flushNow = () => {
+    if (dirty) {
+      clearTimeout(saveTimer);
+      flushSave();
+    }
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushNow();
+  });
+  window.addEventListener("pagehide", flushNow);
+
+  // iPhoneのピンチズームを無効化
+  document.addEventListener("gesturestart", e => e.preventDefault());
+
+  // ---------- 接続設定 ----------
+  (() => {
+    const cfg = gasCfg();
+    const urlEl = document.getElementById("connUrl");
+    const tokEl = document.getElementById("connToken");
+    if (urlEl) urlEl.value = cfg.url || "";
+    if (tokEl) tokEl.value = cfg.token || "";
+    const btn = document.getElementById("connSave");
+    if (btn) btn.addEventListener("click", () => {
+      const url = (urlEl.value || "").trim();
+      const token = (tokEl.value || "").trim();
+      try { localStorage.setItem(GAS_KEY, JSON.stringify({ url, token })); } catch {}
+      const n = document.getElementById("connNote");
+      if (n) n.textContent = "保存しました。読み込み直します…";
+      setTimeout(() => location.reload(), 600);
+    });
+  })();
+
+  // ---------- 起動 ----------
+  (async () => {
+    // ページに埋め込まれた記録（旧バージョンからの引き継ぎ用の初期値）
+    let embedded = null;
+    try { embedded = JSON.parse(document.getElementById("app-state").textContent); } catch {}
+    if (!validState(embedded)) embedded = null;
+
+    const local = loadLocal();
+    const mine = mergeStates(local, embedded);
+    if (mine) { state = normalize(mine); render(); }
+
+    const cfg0 = gasCfg();
+    if (!cfg0.url) {
+      cloudReady = true;
+      setChip("この端末のみ保存");
+      showLocalNotice("no-config");
+      return;
+    }
+    // サーバーの記録を読み込む（失敗しても上書き保存はせず、成功するまで再試行）
+    const loadRemote = async () => {
+      try {
+        const res = await fetch(cfg0.url + "?token=" + encodeURIComponent(cfg0.token || "") + "&action=state");
+        const j = await res.json();
+        if (!j || !j.ok) throw new Error((j && j.error) || "load failed");
+        const remote = validState(j.state) ? j.state : null;
+        const merged = mergeStates(mergeStates(state, mine), remote);
+        if (merged) { state = merged; try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch {} render(); }
+        cloudReady = true;
+        const remoteCore = remote ? coreOf(normalize(remote)) : "";
+        if (!remote || coreOf(state) !== remoteCore || dirty) {
+          state.updatedAt = new Date().toISOString();
+          dirty = true;
+          flushSave();          // 手元にしかない記録をサーバーへ足し戻す
+        } else {
+          setChip("同期済み ✓", true);
+        }
+      } catch (e) {
+        setChip("未同期・再試行中…");
+        setTimeout(loadRemote, 4000);
+      }
+    };
+    await loadRemote();
+
+    // 画面に戻ってきたら、他の端末で保存された変更を取り込む
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState !== "visible" || dirty || saving) return;
+      const cfg = gasCfg();
+      if (!cfg.url) return;
+      try {
+        const res = await fetch(cfg.url + "?token=" + encodeURIComponent(cfg.token || "") + "&action=state");
+        const j = await res.json();
+        if (!j || !j.ok || !validState(j.state)) return;
+        const merged = mergeStates(state, j.state);
+        if (coreOf(merged) === coreOf(state)) return;
+        state = merged;
+        try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch {}
+        render();
+        setChip("同期済み ✓", true);
+      } catch {}
+    });
+  })();
+})();
+</script>
+
+</body></html>
